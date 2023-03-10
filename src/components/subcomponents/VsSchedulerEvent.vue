@@ -2,6 +2,6 @@
 </script>
 
 <template>
-  <div class="event-container">
+  <div class="vs-scheduler-event">
   </div>
 </template>
