@@ -1,25 +1,16 @@
 # scheduling-tool
 
-This template should help get you started developing with Vue 3 in Vite.
+![image](https://user-images.githubusercontent.com/45457205/224491413-119c5c5e-b43d-43c3-a322-6b1d1c6771af.png)
 
-## Recommended IDE Setup
+A demo project of a rough Gantt chart tool. Not intende to be final, but a general playaround with ideas, structure, and a practical experiement. Many ways to be improved.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+- Styling
+- Virtual Scrolling
+- Data centralisation
+- Removal of duplicate code
+- Optimisations of date computations
+- DnD events
+- Multiple event rendering, rather than one long event
 
 ## Project Setup
 
