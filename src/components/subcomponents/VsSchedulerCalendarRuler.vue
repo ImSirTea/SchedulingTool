@@ -58,9 +58,9 @@ watch(() => props.scrollX, () => {
  <div ref="rulerContainer" class="vs-scheduler-calendar-ruler">
    <div class="vs-scheduler-calendar-months-container">
     <div v-for="month in allMonths" :key="month.toString()" class="vs-scheduler-calendar-month" :style="{width: cellWidth * month.numberOfVisibleDays + 'px'}">
-      {{ month.name }}
+         {{ month.name }}
+      </div>
     </div>
-   </div>
    <div class="vs-scheduler-calendar-days-container">
     <div v-for="day in allDays" :key="day.toString()" class="vs-scheduler-calendar-day" :style="{width: cellWidth + 'px'}">
       {{ day }}
@@ -110,7 +110,6 @@ watch(() => props.scrollX, () => {
 }
 
 .vs-scheduler-calendar-month {
-   width: 5rem;
    height: calc(var(--vs-scheduler-row-height) / 2);
    border-bottom: 1px solid black;
    border-right: 1px solid black;
