@@ -11,6 +11,7 @@ export interface VsSchedulerTimelineProps {
 
 export interface VsSchedulerTimelineEvents {
   (eventName: "on-scroll", scrollOffsets: {scrollX: number, scrollY: number}): void;
+  (eventName: "on-scale", scaleDelta: 1 | 0 | -1): void;
 }
 
 const props = defineProps<VsSchedulerTimelineProps>();
@@ -25,11 +26,34 @@ const lastKnownScrollPosition = reactive({
   scrollY: 0,
 })
 
+let scrollYLocked = false;
+
 function onScrollView(event: Event) {
-  if (timelineContainer.value) {
-    lastKnownScrollPosition.scrollX = timelineContainer.value.scrollLeft;
-    lastKnownScrollPosition.scrollY = timelineContainer.value.scrollTop;
-    emit("on-scroll", lastKnownScrollPosition);
+  if (!timelineContainer.value) {
+    return 
+  }
+
+  lastKnownScrollPosition.scrollX = timelineContainer.value.scrollLeft;
+  lastKnownScrollPosition.scrollY = scrollYLocked ? lastKnownScrollPosition.scrollY : timelineContainer.value.scrollTop;
+
+  emit("on-scroll", lastKnownScrollPosition);
+}
+
+function onMouseScroll(event: Event | WheelEvent) {
+  let scaleDelta: 1 | 0 | -1 = 0;
+
+  if (event instanceof WheelEvent) {
+    scrollYLocked = event.ctrlKey;
+
+    // Scrolling down is to scroll out, which is positive Y
+    scaleDelta = event.deltaY > 0 ? -1 : 1;
+  }
+
+  if (scrollYLocked) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    emit("on-scale", scaleDelta);
   }
 }
 
@@ -37,6 +61,9 @@ onMounted(() => {
   if (timelineContainer.value) {
     lastKnownScrollPosition.scrollX = timelineContainer.value.scrollLeft;
     lastKnownScrollPosition.scrollY = timelineContainer.value.scrollTop;
+
+    timelineContainer.value.addEventListener("mousewheel", (e) => onMouseScroll(e));
+    timelineContainer.value.addEventListener("DOMMouseScroll", (e) => onMouseScroll(e));
   }
 })
 </script>

@@ -2,7 +2,7 @@
 import VsSchedulerTimeline from './VsSchedulerTimeline.vue';
 import VsSchedulerGroups from './VsSchedulerGroups.vue';
 import VsSchedulerCalendarRuler from './subcomponents/VsSchedulerCalendarRuler.vue';
-import { LocalDate } from '@js-joda/core';
+import type { LocalDate } from '@js-joda/core';
 import { computed, reactive, ref } from 'vue';
 
 export interface VsSchedulerEvent {
@@ -34,10 +34,18 @@ const scrollOffset = reactive({
 const scale = ref<number>(1);
 const baseWidth = ref<number>(50);
 const cellWidth = computed(() => scale.value * baseWidth.value);
+const scaleModifier = 10;
 
 function onTimelineScroll(scrollEvent: {scrollX: number, scrollY: number}) {
   scrollOffset.scrollX = scrollEvent.scrollX;
   scrollOffset.scrollY = scrollEvent.scrollY;
+}
+
+function onTimelineScale(scaleDelta: 1 | 0 | -1) {
+  const changeInWidth = scaleDelta * scaleModifier;
+  baseWidth.value += changeInWidth;
+
+  baseWidth.value = Math.min(scaleModifier * 15, Math.max(scaleModifier * 2, baseWidth.value));
 }
 
 const allStartDates = computed(() => props.groups.flatMap((group) => group.events.flatMap((event) => event.startDate)));
@@ -52,7 +60,7 @@ const lastestEndDate = computed(() => allEndDates.value.reduce((lastestDate, cur
   <vs-scheduler-calendar-ruler :start-date="earliestStartDate" :end-date="lastestEndDate" :scroll-x="scrollOffset.scrollX" :cell-width="cellWidth" />
   <div class="vs-scheduler">
     <vs-scheduler-groups :groups="groups" :scroll-y="scrollOffset.scrollY" />
-    <vs-scheduler-timeline :groups="groups" @on-scroll="onTimelineScroll" :cell-width="cellWidth" />
+    <vs-scheduler-timeline :groups="groups" @on-scroll="onTimelineScroll" @on-scale="onTimelineScale" :cell-width="cellWidth" />
   </div>
 </template>
 
