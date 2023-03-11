@@ -15,4 +15,11 @@ const props = defineProps<VsSchedulerEventGroupProps>();
 </template>
 
 <style>
+.vs-scheduler-group {
+  background-color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 </style>

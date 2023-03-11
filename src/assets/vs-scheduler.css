@@ -1,11 +1,3 @@
-
-.vs-scheduler-group {
-  background-color: white;
-  height: 5rem;
-  border-bottom: 1px solid black;
-  border-right: 1px solid black;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
+:root {
+  --vs-scheduler-row-height: 4rem;
 }

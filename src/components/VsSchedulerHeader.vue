@@ -11,7 +11,7 @@
 <style>
 .vs-scheduler-header {
   grid-area: header;
-  height: 5rem;
+  height: var(--vs-scheduler-row-height);
   border-bottom: 1px solid black;
 }
 </style>
