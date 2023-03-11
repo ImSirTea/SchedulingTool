@@ -1,5 +1,7 @@
 # scheduling-tool
 
+![image](https://user-images.githubusercontent.com/45457205/224491413-119c5c5e-b43d-43c3-a322-6b1d1c6771af.png)
+
 A demo project of a rough Gantt chart tool. Not intende to be final, but a general playaround with ideas, structure, and a practical experiement. Many ways to be improved.
 
 - Styling
