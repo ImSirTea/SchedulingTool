@@ -19,10 +19,18 @@ const itemWidth = computed(() => props.cellWidth * numberOfDaysInEvents.value);
 
 const daysBetweenOriginAndItemStart = computed(() => ChronoUnit.DAYS.between(props.earliestStartDate, itemStartDate.value));
 const offsetLeft = computed(() => props.cellWidth * daysBetweenOriginAndItemStart.value);
+
+const backgroundStripePattern = computed(() => `repeating-linear-gradient(
+    90deg,
+    white,
+    white ${props.cellWidth - 1}px,
+    black 0,
+    black ${props.cellWidth}px
+  )`)
 </script>
 
 <template>
- <div class="vs-scheduler-timeline-row">
+ <div class="vs-scheduler-timeline-row" :style="{background: backgroundStripePattern}">
     <div class="vs-scheduler-timeline-item" :style="{width: itemWidth + 'px', 'margin-left': offsetLeft + 'px'}" />
  </div>
 </template>
