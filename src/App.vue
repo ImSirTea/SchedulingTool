@@ -25,7 +25,7 @@ function buildEvents(number: number, startDate: LocalDate): VsSchedulerEvent[] {
 }
 
 const eventGroups = ref<VsSchedulerEventGroup[]>(
-  Array(500)
+  Array(50)
     .fill(0)
     .map(
       (arr, idx): VsSchedulerEventGroup => ({
