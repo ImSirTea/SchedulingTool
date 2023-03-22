@@ -114,9 +114,9 @@ function onDragHandleMove(event: MouseEvent) {
 
     const newDate = dragHandleOriginDate.plusDays(dragHandleChangeInDate)
 
-    if (dragHandleOrigin === 'start-date') {
+    if (dragHandleOrigin === 'start-date' && newDate.isBefore(internalEvent.endDate)) {
       internalEvent.startDate = newDate
-    } else {
+    } else if (dragHandleOrigin === 'end-date' && newDate.isAfter(internalEvent.startDate)) {
       internalEvent.endDate = newDate
     }
   }
