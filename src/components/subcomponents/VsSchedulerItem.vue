@@ -44,79 +44,93 @@ function itemOffsetLeft(event: VsSchedulerEvent): number {
   return props.cellWidth * daysBetweenOriginAndItemStart(event) + SPACING_OFFSET / 2
 }
 
-type DragHandleOrigin = 'start-date' | 'end-date'
+type ResizeHandleOrigin = 'start-date' | 'end-date'
 
-let dragHandleOrigin: DragHandleOrigin | null = null
-let dragHandleOriginDate: LocalDate | null = null
-let dragHandleXOrigin: number | null = null
-let dragHandleChangeInDate: number = 0
+let resizeHandleOrigin: ResizeHandleOrigin | null = null
+let resizeHandleOriginDate: LocalDate | null = null
+let resizeHandleXOrigin: number | null = null
+let resizeHandleChangeInDate: number = 0
+let activeResizeHandle: HTMLDivElement | null = null
 
 let dragItemXOrigin: number | null = null
 let dragItemChangeInDate: number = 0
 
-function onDragHandleMouseDown(
+function onResizeHandleMouseDown(
   event: MouseEvent,
   originDate: LocalDate,
-  dragHandlePosition: DragHandleOrigin
+  dragHandlePosition: ResizeHandleOrigin
 ) {
   // We are already dragging
   if (
-    dragHandleOrigin !== null ||
-    dragHandleOriginDate !== null ||
-    dragHandleXOrigin !== null ||
-    dragItemXOrigin !== null
+    resizeHandleOrigin !== null ||
+    resizeHandleOriginDate !== null ||
+    resizeHandleXOrigin !== null ||
+    dragItemXOrigin !== null ||
+    activeResizeHandle !== null
   ) {
     return
   }
 
-  dragHandleOriginDate = originDate
-  dragHandleXOrigin = event.clientX + props.scrollX
-  dragHandleOrigin = dragHandlePosition
+  resizeHandleOriginDate = originDate
+  resizeHandleXOrigin = event.clientX + props.scrollX
+  resizeHandleOrigin = dragHandlePosition
+  activeResizeHandle = event.target as HTMLDivElement
 
-  document.addEventListener('mousemove', onDragHandleMove)
-  document.addEventListener('mouseup', onDragHandleMouseUp)
+  window.addEventListener('mousemove', onResizeHandleMove)
+  window.addEventListener('mouseup', onResizeHandleMouseUp)
   document.body.classList.add('vs-scheduler-drag-handle-resizing')
+  activeResizeHandle.classList.add('vs-scheduler-drag-handle-active')
 }
 
-function onDragHandleMouseUp(event: MouseEvent) {
-  if (dragHandleOriginDate && dragHandleChangeInDate) {
-    const newDate = dragHandleOriginDate.plusDays(dragHandleChangeInDate)
+function onResizeHandleMouseUp(event: MouseEvent) {
+  if (resizeHandleOriginDate && resizeHandleChangeInDate) {
+    const newDate = resizeHandleOriginDate.plusDays(resizeHandleChangeInDate)
 
-    if (dragHandleOrigin === 'start-date') {
+    if (resizeHandleOrigin === 'start-date') {
       emit('start-date-changed', newDate)
     } else {
       emit('end-date-changed', newDate)
     }
   }
 
-  dragHandleOriginDate = null
-  dragHandleXOrigin = null
-  dragHandleOrigin = null
-  dragHandleChangeInDate = 0
+  if (activeResizeHandle) {
+    activeResizeHandle.classList.remove('vs-scheduler-drag-handle-active')
+  }
 
-  document.removeEventListener('mousemove', onDragHandleMove)
-  document.removeEventListener('mouseup', onDragHandleMouseUp)
+  resizeHandleOriginDate = null
+  resizeHandleXOrigin = null
+  resizeHandleOrigin = null
+  resizeHandleChangeInDate = 0
+  activeResizeHandle = null
+
+  window.removeEventListener('mousemove', onResizeHandleMove)
+  window.removeEventListener('mouseup', onResizeHandleMouseUp)
   document.body.classList.remove('vs-scheduler-drag-handle-resizing')
 }
 
-function onDragHandleMove(event: MouseEvent) {
+function onResizeHandleMove(event: MouseEvent) {
   // We are not dragging
-  if (dragHandleOrigin === null || dragHandleOriginDate === null || dragHandleXOrigin === null) {
+  if (
+    resizeHandleOrigin === null ||
+    resizeHandleOriginDate === null ||
+    resizeHandleXOrigin === null ||
+    activeResizeHandle === null
+  ) {
     return
   }
 
   // @TODO: Dupe logic
-  const xDelta = event.clientX + props.scrollX - dragHandleXOrigin
+  const xDelta = event.clientX + props.scrollX - resizeHandleXOrigin
   const datesDelta = Math.round(xDelta / props.cellWidth)
 
-  if (dragHandleChangeInDate !== datesDelta) {
-    dragHandleChangeInDate = datesDelta
+  if (resizeHandleChangeInDate !== datesDelta) {
+    resizeHandleChangeInDate = datesDelta
 
-    const newDate = dragHandleOriginDate.plusDays(dragHandleChangeInDate)
+    const newDate = resizeHandleOriginDate.plusDays(resizeHandleChangeInDate)
 
-    if (dragHandleOrigin === 'start-date' && newDate.isBefore(internalEvent.endDate)) {
+    if (resizeHandleOrigin === 'start-date' && newDate.isBefore(internalEvent.endDate)) {
       internalEvent.startDate = newDate
-    } else if (dragHandleOrigin === 'end-date' && newDate.isAfter(internalEvent.startDate)) {
+    } else if (resizeHandleOrigin === 'end-date' && newDate.isAfter(internalEvent.startDate)) {
       internalEvent.endDate = newDate
     }
   }
@@ -125,9 +139,9 @@ function onDragHandleMove(event: MouseEvent) {
 function onItemMouseDown(event: MouseEvent) {
   // We aren't dragging an item
   if (
-    dragHandleOrigin !== null ||
-    dragHandleOriginDate !== null ||
-    dragHandleXOrigin !== null ||
+    resizeHandleOrigin !== null ||
+    resizeHandleOriginDate !== null ||
+    resizeHandleXOrigin !== null ||
     dragItemXOrigin !== null
   ) {
     return
@@ -135,8 +149,8 @@ function onItemMouseDown(event: MouseEvent) {
 
   dragItemXOrigin = event.clientX + props.scrollX
 
-  document.addEventListener('mousemove', onItemMouseMove)
-  document.addEventListener('mouseup', onItemMouseUp)
+  window.addEventListener('mousemove', onItemMouseMove)
+  window.addEventListener('mouseup', onItemMouseUp)
   document.body.classList.add('vs-scheduler-timeline-item-dragging')
 }
 
@@ -152,8 +166,8 @@ function onItemMouseUp(event: MouseEvent) {
   dragItemXOrigin = null
   dragItemChangeInDate = 0
 
-  document.removeEventListener('mousemove', onItemMouseMove)
-  document.removeEventListener('mouseup', onItemMouseUp)
+  window.removeEventListener('mousemove', onItemMouseMove)
+  window.removeEventListener('mouseup', onItemMouseUp)
   document.body.classList.remove('vs-scheduler-timeline-item-dragging')
 }
 
@@ -188,18 +202,19 @@ function onItemMouseMove(event: MouseEvent) {
   >
     <div
       class="vs-scheduler-drag-handle vs-scheduler-drag-handle-left"
-      @mousedown="($event) => onDragHandleMouseDown($event, internalEvent.startDate, 'start-date')"
+      @mousedown="
+        ($event) => onResizeHandleMouseDown($event, internalEvent.startDate, 'start-date')
+      "
     />
     <div
       class="vs-scheduler-drag-handle vs-scheduler-drag-handle-right"
-      @mousedown="($event) => onDragHandleMouseDown($event, internalEvent.endDate, 'end-date')"
+      @mousedown="($event) => onResizeHandleMouseDown($event, internalEvent.endDate, 'end-date')"
     />
   </div>
 </template>
 
 <style>
 .vs-scheduler-timeline-item {
-  height: 100%;
   background-color: lightcoral;
   position: absolute;
   box-shadow: inset 0 0 0 5px rgba(255, 0, 0, 0.5);
@@ -224,7 +239,10 @@ function onItemMouseMove(event: MouseEvent) {
   cursor: ew-resize;
 }
 
-.vs-scheduler-timeline-item:hover .vs-scheduler-drag-handle {
+/* Make our resize handle visible if we aren't already resizing, and we are hovering */
+body:not(.vs-scheduler-drag-handle-resizing)
+  .vs-scheduler-timeline-item:hover
+  .vs-scheduler-drag-handle {
   display: block;
   top: 0;
   bottom: 0;
@@ -238,16 +256,31 @@ function onItemMouseMove(event: MouseEvent) {
   right: 0;
 }
 
+/* Show grabbed cursor  when resizing */
 .vs-scheduler-timeline-item-dragging {
   cursor: grabbing !important;
 }
 
+/* Show east/west resize cursor when resizing */
 .vs-scheduler-drag-handle-resizing {
   cursor: ew-resize !important;
 }
 
+/* Is we aren't dragging or resizing, show the grab */
 body:not(.vs-scheduler-drag-handle-resizing, .vs-scheduler-timeline-item-dragging)
   .vs-scheduler-timeline-item {
   cursor: grab;
+}
+
+/* Don't show handles on drag  */
+body.vs-scheduler-timeline-item-dragging
+  .vs-scheduler-timeline-item:hover
+  .vs-scheduler-drag-handle {
+  display: none;
+}
+
+/* Show handle on resize */
+.vs-scheduler-drag-handle-active {
+  display: block;
 }
 </style>
