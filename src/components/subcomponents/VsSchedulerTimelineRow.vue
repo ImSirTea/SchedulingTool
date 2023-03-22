@@ -9,7 +9,7 @@ export interface VsSchedulerTimelineRowProps {
   earliestStartDate: LocalDate
 }
 
-const SPACING_OFFSET = 4
+const SPACING_OFFSET = 2
 const HEIGHT_OFFSET = 8
 
 const props = defineProps<VsSchedulerTimelineRowProps>()
@@ -19,7 +19,7 @@ function numberOfDaysInEvent(event: VsSchedulerEvent): number {
 }
 
 function eventWidth(event: VsSchedulerEvent): number {
-  return props.cellWidth * numberOfDaysInEvent(event) - SPACING_OFFSET - 1 // @TODO: Could use a CSS var to control spacing
+  return props.cellWidth * numberOfDaysInEvent(event) - SPACING_OFFSET - 1 // @TODO: Could use a CSS var to control spacing, -1 for border
 }
 
 function daysBetweenOriginAndEventStart(event: VsSchedulerEvent): number {
