@@ -13,6 +13,7 @@ function buildEvents(number: number, startDate: LocalDate): VsSchedulerEvent[] {
     const endDate = workingStartDate.plusDays(Math.max(1, Math.round(Math.random() * 10)))
 
     events.push({
+      id: i.toString(),
       startDate: workingStartDate,
       endDate
     })
@@ -24,7 +25,7 @@ function buildEvents(number: number, startDate: LocalDate): VsSchedulerEvent[] {
 }
 
 const eventGroups = ref<VsSchedulerEventGroup[]>(
-  Array(50)
+  Array(500)
     .fill(0)
     .map(
       (arr, idx): VsSchedulerEventGroup => ({

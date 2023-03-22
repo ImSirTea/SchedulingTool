@@ -6,6 +6,7 @@ import type { LocalDate } from '@js-joda/core'
 import { computed, reactive, ref } from 'vue'
 
 export interface VsSchedulerEvent {
+  id: string
   startDate: LocalDate
   endDate: LocalDate
 }
