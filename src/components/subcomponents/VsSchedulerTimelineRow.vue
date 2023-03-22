@@ -1,49 +1,65 @@
 <script lang="ts" setup>
-import { ChronoUnit, LocalDate } from '@js-joda/core';
-import { computed } from 'vue';
-import type { VsSchedulerEventGroup } from '../VsScheduler.vue';
+import { ChronoUnit, LocalDate } from '@js-joda/core'
+import { computed } from 'vue'
+import type { VsSchedulerEventGroup, VsSchedulerEvent } from '../VsScheduler.vue'
 
 export interface VsSchedulerTimelineRowProps {
-  group: VsSchedulerEventGroup;
-  cellWidth: number;
-  earliestStartDate: LocalDate;
+  group: VsSchedulerEventGroup
+  cellWidth: number
+  earliestStartDate: LocalDate
 }
 
-const props = defineProps<VsSchedulerTimelineRowProps>();
+const SPACING_OFFSET = 4
+const HEIGHT_OFFSET = 8
 
-const itemStartDate = computed(() => props.group.events.map((event) => event.startDate).reduce((itemStartDate, event) => itemStartDate.isBefore(event) ? itemStartDate : event));
-const itemEndDate = computed(() => props.group.events.map((event) => event.endDate).reduce((itemEndDate, event) => itemEndDate.isAfter(event) ? itemEndDate : event));
+const props = defineProps<VsSchedulerTimelineRowProps>()
 
-const numberOfDaysInEvents = computed(() => ChronoUnit.DAYS.between(itemStartDate.value, itemEndDate.value));
-const itemWidth = computed(() => props.cellWidth * numberOfDaysInEvents.value);
+function numberOfDaysInEvent(event: VsSchedulerEvent): number {
+  return ChronoUnit.DAYS.between(event.startDate, event.endDate)
+}
 
-const daysBetweenOriginAndItemStart = computed(() => ChronoUnit.DAYS.between(props.earliestStartDate, itemStartDate.value));
-const offsetLeft = computed(() => props.cellWidth * daysBetweenOriginAndItemStart.value);
+function eventWidth(event: VsSchedulerEvent): number {
+  return props.cellWidth * numberOfDaysInEvent(event) - SPACING_OFFSET - 1 // @TODO: Could use a CSS var to control spacing
+}
 
-const backgroundStripePattern = computed(() => `repeating-linear-gradient(
+function daysBetweenOriginAndEventStart(event: VsSchedulerEvent): number {
+  return ChronoUnit.DAYS.between(props.earliestStartDate, event.startDate)
+}
+
+function eventOffsetLeft(event: VsSchedulerEvent): number {
+  return props.cellWidth * daysBetweenOriginAndEventStart(event) + SPACING_OFFSET / 2
+}
+
+const backgroundStripePattern = computed(
+  () => `repeating-linear-gradient(
     90deg,
     white,
     white ${props.cellWidth - 1}px,
     black 0,
     black ${props.cellWidth}px
-  )`)
+  )`
+)
 </script>
 
 <template>
- <div class="vs-scheduler-timeline-row" :style="{background: backgroundStripePattern}">
-    <div class="vs-scheduler-timeline-item" :style="{width: itemWidth + 'px', 'margin-left': offsetLeft + 'px'}" />
- </div>
+  <div class="vs-scheduler-timeline-row" :style="{ background: backgroundStripePattern }">
+    <div
+      v-for="(event, idx) in group.events"
+      class="vs-scheduler-timeline-item"
+      :style="{
+        width: eventWidth(event) + 'px',
+        height: `calc(100% - ${HEIGHT_OFFSET}px)`,
+        transform: `translate(${eventOffsetLeft(event)}px, ${HEIGHT_OFFSET / 2}px)`
+      }"
+      :key="idx + event.startDate.toString() + event.endDate.toString()"
+    />
+  </div>
 </template>
 
 <style>
-.vs-scheduler-timeline-row {
-  background-color: white;
-  padding: 5px 0;
-}
-
 .vs-scheduler-timeline-item {
   height: 100%;
   background-color: lightcoral;
-
+  position: absolute;
 }
 </style>
