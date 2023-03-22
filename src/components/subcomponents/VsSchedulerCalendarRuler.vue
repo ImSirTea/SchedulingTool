@@ -20,20 +20,23 @@ const allDays = computed(() =>
 )
 
 const allMonths = computed(() => {
-  const months: { name: string; numberOfVisibleDays: number }[] = []
+  const months: { name: string; numberOfVisibleDays: number; year: string }[] = []
 
   let currentMonth: string = ''
+  let currentYear: string = ''
   let numberOfVisibleDays = 0
 
   for (let i = 0; i <= numberOfDaysBetween.value; i++) {
     const workingDate = props.startDate.plusDays(i)
     const wokringMonth = workingDate.month().toString()
+    const workingYear = workingDate.year().toString()
 
     if (wokringMonth !== currentMonth) {
       if (currentMonth !== '') {
-        months.push({ name: currentMonth, numberOfVisibleDays })
+        months.push({ name: currentMonth, numberOfVisibleDays, year: currentYear })
       }
       currentMonth = wokringMonth
+      currentYear = workingYear
       numberOfVisibleDays = 0
     }
 
@@ -41,7 +44,7 @@ const allMonths = computed(() => {
   }
 
   if (numberOfVisibleDays > 0) {
-    months.push({ name: currentMonth, numberOfVisibleDays })
+    months.push({ name: currentMonth, numberOfVisibleDays, year: currentYear })
   }
 
   return months
@@ -66,7 +69,7 @@ watch(
         class="vs-scheduler-calendar-month"
         :style="{ width: cellWidth * month.numberOfVisibleDays + 'px' }"
       >
-        {{ month.name }}
+        {{ month.name }} {{ month.year }}
       </div>
     </div>
     <div class="vs-scheduler-calendar-days-container">
