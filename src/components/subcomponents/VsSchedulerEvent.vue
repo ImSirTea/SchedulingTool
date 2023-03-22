@@ -28,6 +28,22 @@ function daysBetweenOriginAndEventStart(event: VsSchedulerEvent): number {
 function eventOffsetLeft(event: VsSchedulerEvent): number {
   return props.cellWidth * daysBetweenOriginAndEventStart(event) + SPACING_OFFSET / 2
 }
+
+let dragOriginDate: LocalDate | null = null
+
+function onDragHandleMouseDown(event: MouseEvent, originDate: LocalDate) {
+  dragOriginDate = originDate
+}
+
+function onDragHandleMouseUp(event: MouseEvent, originDate: LocalDate) {
+  dragOriginDate = null
+}
+
+function onDragHandleMove(event: MouseEvent) {
+  if (dragOriginDate === null) {
+    return
+  }
+}
 </script>
 
 <template>
@@ -38,7 +54,16 @@ function eventOffsetLeft(event: VsSchedulerEvent): number {
       height: `calc(100% - ${HEIGHT_OFFSET}px)`,
       transform: `translate(${eventOffsetLeft(event)}px, ${HEIGHT_OFFSET / 2}px)`
     }"
-  ></div>
+  >
+    <div
+      class="vs-scheduler-drag-handle vs-scheduler-drag-handle-left"
+      @mousedown="($event) => onDragHandleMouseDown($event, event.startDate)"
+    />
+    <div
+      class="vs-scheduler-drag-handle vs-scheduler-drag-handle-right"
+      @mousedown="($event) => onDragHandleMouseUp($event, event.endDate)"
+    />
+  </div>
 </template>
 
 <style>
@@ -46,5 +71,32 @@ function eventOffsetLeft(event: VsSchedulerEvent): number {
   height: 100%;
   background-color: lightcoral;
   position: absolute;
+}
+
+.vs-scheduler-drag-handle {
+  position: absolute;
+  width: 1em;
+  height: 100%;
+  background-color: gray;
+  display: none;
+  cursor: grab;
+}
+
+.vs-scheduler-drag-handle:active {
+  cursor: grabbing;
+}
+
+.vs-scheduler-timeline-event:hover .vs-scheduler-drag-handle {
+  display: block;
+  top: 0;
+  bottom: 0;
+}
+
+.vs-scheduler-drag-handle-left {
+  left: 0;
+}
+
+.vs-scheduler-drag-handle-right {
+  right: 0;
 }
 </style>

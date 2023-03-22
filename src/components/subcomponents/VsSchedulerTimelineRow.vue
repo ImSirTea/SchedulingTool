@@ -7,7 +7,9 @@ import VsSchedulerEventVue from './VsSchedulerEvent.vue'
 export interface VsSchedulerTimelineRowProps {
   group: VsSchedulerEventGroup
   cellWidth: number
+  rowWidth: number
   earliestStartDate: LocalDate
+  latestEndDate: LocalDate
 }
 
 const props = defineProps<VsSchedulerTimelineRowProps>()
@@ -24,7 +26,10 @@ const backgroundStripePattern = computed(
 </script>
 
 <template>
-  <div class="vs-scheduler-timeline-row" :style="{ background: backgroundStripePattern }">
+  <div
+    class="vs-scheduler-timeline-row"
+    :style="{ background: backgroundStripePattern, width: `${props.rowWidth}px` }"
+  >
     <vs-scheduler-event-vue
       v-for="(event, idx) in group.events"
       :key="idx + event.startDate.toString() + event.endDate.toString()"
