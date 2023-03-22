@@ -9,6 +9,7 @@ export interface VsSchedulerTimelineProps {
   cellWidth: number
   earliestStartDate: LocalDate
   latestEndDate: LocalDate
+  scrollX: number
 }
 
 export interface VsSchedulerTimelineEvents {
@@ -85,6 +86,7 @@ onMounted(() => {
       :group="group"
       :cell-width="cellWidth"
       :row-width="rowWidth"
+      :scroll-x="scrollX"
     />
   </div>
 </template>

@@ -7,6 +7,7 @@ export interface VsSchedulerItemProps {
   event: VsSchedulerEvent
   cellWidth: number
   earliestStartDate: LocalDate
+  scrollX: number
 }
 
 export interface VsSchedulerItemEvents {
@@ -69,7 +70,7 @@ function onDragHandleMouseDown(
   }
 
   dragHandleOriginDate = originDate
-  dragHandleXOrigin = event.clientX
+  dragHandleXOrigin = event.clientX + props.scrollX
   dragHandleOrigin = dragHandlePosition
 
   document.addEventListener('mousemove', onDragHandleMove)
@@ -104,7 +105,8 @@ function onDragHandleMove(event: MouseEvent) {
     return
   }
 
-  const xDelta = event.clientX - dragHandleXOrigin
+  // @TODO: Dupe logic
+  const xDelta = event.clientX + props.scrollX - dragHandleXOrigin
   const datesDelta = Math.round(xDelta / props.cellWidth)
 
   if (dragHandleChangeInDate !== datesDelta) {
@@ -131,7 +133,7 @@ function onItemMouseDown(event: MouseEvent) {
     return
   }
 
-  dragItemXOrigin = event.clientX
+  dragItemXOrigin = event.clientX + props.scrollX
 
   document.addEventListener('mousemove', onItemMouseMove)
   document.addEventListener('mouseup', onItemMouseUp)
@@ -162,7 +164,7 @@ function onItemMouseMove(event: MouseEvent) {
   }
 
   // @TODO: Dupe logic
-  const xDelta = event.clientX - dragItemXOrigin
+  const xDelta = event.clientX + props.scrollX - dragItemXOrigin
   const datesDelta = Math.round(xDelta / props.cellWidth)
 
   if (dragItemChangeInDate !== datesDelta) {

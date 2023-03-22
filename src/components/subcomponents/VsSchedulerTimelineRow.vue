@@ -10,6 +10,7 @@ export interface VsSchedulerTimelineRowProps {
   rowWidth: number
   earliestStartDate: LocalDate
   latestEndDate: LocalDate
+  scrollX: number
 }
 
 const props = defineProps<VsSchedulerTimelineRowProps>()
@@ -117,6 +118,7 @@ function onMoveEvent(
       :cell-width="cellWidth"
       :earliest-start-date="earliestStartDate"
       :event="event"
+      :scroll-x="scrollX"
       @start-date-changed="(newStartDate) => onStartDateChange(event, newStartDate)"
       @end-date-changed="(newEndDate) => onEndDateChange(event, newEndDate)"
       @move-event="(newStartDate, newEndDate) => onMoveEvent(event, newStartDate, newEndDate)"

@@ -84,6 +84,7 @@ const lastestEndDate = computed(() =>
       @on-scroll="onTimelineScroll"
       @on-scale="onTimelineScale"
       :cell-width="cellWidth"
+      :scroll-x="scrollOffset.scrollX"
     />
   </div>
 </template>
