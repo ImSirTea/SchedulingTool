@@ -40,7 +40,7 @@ function onStartDateChange(eventToUpdate: VsSchedulerEvent, newStartDate: LocalD
     return
   }
 
-  const intersectsOrIsBefore = props.group.events.filter((event) => {
+  const allEventsBefore = props.group.events.filter((event) => {
     if (event.id === eventToUpdate.id) {
       return false
     }
@@ -57,12 +57,35 @@ function onStartDateChange(eventToUpdate: VsSchedulerEvent, newStartDate: LocalD
   })
 
   const changeInDays = ChronoUnit.DAYS.between(eventToUpdate.startDate, newStartDate)
-  eventToUpdate.startDate = newStartDate
 
-  intersectsOrIsBefore.map((event) => {
-    event.startDate = event.startDate.plusDays(changeInDays)
-    event.endDate = event.endDate.plusDays(changeInDays)
-  })
+  if (newStartDate.isAfter(eventToUpdate.startDate)) {
+    allEventsBefore.map((event) => {
+      event.startDate = event.startDate.plusDays(changeInDays)
+      event.endDate = event.endDate.plusDays(changeInDays)
+    })
+  } else {
+    const intersectingEvents = props.group.events.filter((event) => {
+      if (event.id === eventToUpdate.id) {
+        return false
+      }
+
+      return datesIntersect({
+        event1Start: event.startDate,
+        event1End: event.endDate,
+        event2Start: newStartDate,
+        event2End: eventToUpdate.endDate
+      })
+    })
+
+    if (intersectingEvents.length) {
+      allEventsBefore.map((event) => {
+        event.startDate = event.startDate.plusDays(changeInDays)
+        event.endDate = event.endDate.plusDays(changeInDays)
+      })
+    }
+  }
+
+  eventToUpdate.startDate = newStartDate
 }
 
 function onEndDateChange(eventToUpdate: VsSchedulerEvent, newEndDate: LocalDate) {
@@ -71,7 +94,7 @@ function onEndDateChange(eventToUpdate: VsSchedulerEvent, newEndDate: LocalDate)
     return
   }
 
-  const intersectsOrIsAfter = props.group.events.filter((event) => {
+  const allEventsAfter = props.group.events.filter((event) => {
     if (event.id === eventToUpdate.id) {
       return false
     }
@@ -88,12 +111,35 @@ function onEndDateChange(eventToUpdate: VsSchedulerEvent, newEndDate: LocalDate)
   })
 
   const changeInDays = ChronoUnit.DAYS.between(eventToUpdate.endDate, newEndDate)
-  eventToUpdate.endDate = newEndDate
 
-  intersectsOrIsAfter.map((event) => {
-    event.startDate = event.startDate.plusDays(changeInDays)
-    event.endDate = event.endDate.plusDays(changeInDays)
-  })
+  if (newEndDate.isBefore(eventToUpdate.endDate)) {
+    allEventsAfter.map((event) => {
+      event.startDate = event.startDate.plusDays(changeInDays)
+      event.endDate = event.endDate.plusDays(changeInDays)
+    })
+  } else {
+    const intersectingEvents = props.group.events.filter((event) => {
+      if (event.id === eventToUpdate.id) {
+        return false
+      }
+
+      return datesIntersect({
+        event1Start: event.startDate,
+        event1End: event.endDate,
+        event2Start: eventToUpdate.startDate,
+        event2End: newEndDate
+      })
+    })
+
+    if (intersectingEvents.length) {
+      allEventsAfter.map((event) => {
+        event.startDate = event.startDate.plusDays(changeInDays)
+        event.endDate = event.endDate.plusDays(changeInDays)
+      })
+    }
+  }
+
+  eventToUpdate.endDate = newEndDate
 }
 
 function onMoveEvent(
