@@ -13,17 +13,11 @@ export interface VsSchedulerItemProps {
 export interface VsSchedulerItemEvents {
   (eventName: 'start-date-changed', newStartDate: LocalDate): void
   (eventName: 'end-date-changed', newEndDate: LocalDate): void
-  (eventName: 'move-event', newStartDate: LocalDate, newEndDate: LocalDate): void
+  (eventName: 'move-event', datesDelta: number): void
 }
 
 const props = defineProps<VsSchedulerItemProps>()
 const emit = defineEmits<VsSchedulerItemEvents>()
-
-const internalEvent = reactive<VsSchedulerEvent>({
-  id: props.event.id,
-  startDate: props.event.startDate,
-  endDate: props.event.endDate
-}) as VsSchedulerEvent
 
 const SPACING_OFFSET = 2
 const HEIGHT_OFFSET = 8
@@ -83,16 +77,6 @@ function onResizeHandleMouseDown(
 }
 
 function onResizeHandleMouseUp(event: MouseEvent) {
-  if (resizeHandleOriginDate && resizeHandleChangeInDate) {
-    const newDate = resizeHandleOriginDate.plusDays(resizeHandleChangeInDate)
-
-    if (resizeHandleOrigin === 'start-date') {
-      emit('start-date-changed', newDate)
-    } else {
-      emit('end-date-changed', newDate)
-    }
-  }
-
   if (activeResizeHandle) {
     activeResizeHandle.classList.remove('vs-scheduler-drag-handle-active')
   }
@@ -128,10 +112,10 @@ function onResizeHandleMove(event: MouseEvent) {
 
     const newDate = resizeHandleOriginDate.plusDays(resizeHandleChangeInDate)
 
-    if (resizeHandleOrigin === 'start-date' && newDate.isBefore(internalEvent.endDate)) {
-      internalEvent.startDate = newDate
-    } else if (resizeHandleOrigin === 'end-date' && newDate.isAfter(internalEvent.startDate)) {
-      internalEvent.endDate = newDate
+    if (resizeHandleOrigin === 'start-date' && newDate.isBefore(props.event.endDate)) {
+      emit('start-date-changed', newDate)
+    } else if (resizeHandleOrigin === 'end-date' && newDate.isAfter(props.event.startDate)) {
+      emit('end-date-changed', newDate)
     }
   }
 }
@@ -155,14 +139,6 @@ function onItemMouseDown(event: MouseEvent) {
 }
 
 function onItemMouseUp(event: MouseEvent) {
-  if (dragItemChangeInDate) {
-    emit(
-      'move-event',
-      props.event.startDate.plusDays(dragItemChangeInDate),
-      props.event.endDate.plusDays(dragItemChangeInDate)
-    )
-  }
-
   dragItemXOrigin = null
   dragItemChangeInDate = 0
 
@@ -182,10 +158,8 @@ function onItemMouseMove(event: MouseEvent) {
   const datesDelta = Math.round(xDelta / props.cellWidth)
 
   if (dragItemChangeInDate !== datesDelta) {
+    emit('move-event', datesDelta - dragItemChangeInDate)
     dragItemChangeInDate = datesDelta
-
-    internalEvent.startDate = props.event.startDate.plusDays(dragItemChangeInDate)
-    internalEvent.endDate = props.event.endDate.plusDays(dragItemChangeInDate)
   }
 }
 </script>
@@ -194,21 +168,19 @@ function onItemMouseMove(event: MouseEvent) {
   <div
     class="vs-scheduler-timeline-item"
     :style="{
-      width: itemWidth(internalEvent) + 'px',
+      width: itemWidth(event) + 'px',
       height: `calc(100% - ${HEIGHT_OFFSET}px)`,
-      transform: `translate(${itemOffsetLeft(internalEvent)}px, ${HEIGHT_OFFSET / 2}px)`
+      transform: `translate(${itemOffsetLeft(event)}px, ${HEIGHT_OFFSET / 2}px)`
     }"
     @mousedown="($event) => onItemMouseDown($event)"
   >
     <div
       class="vs-scheduler-drag-handle vs-scheduler-drag-handle-left"
-      @mousedown="
-        ($event) => onResizeHandleMouseDown($event, internalEvent.startDate, 'start-date')
-      "
+      @mousedown="($event) => onResizeHandleMouseDown($event, event.startDate, 'start-date')"
     />
     <div
       class="vs-scheduler-drag-handle vs-scheduler-drag-handle-right"
-      @mousedown="($event) => onResizeHandleMouseDown($event, internalEvent.endDate, 'end-date')"
+      @mousedown="($event) => onResizeHandleMouseDown($event, event.endDate, 'end-date')"
     />
   </div>
 </template>

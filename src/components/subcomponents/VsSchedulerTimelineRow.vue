@@ -142,13 +142,11 @@ function onEndDateChange(eventToUpdate: VsSchedulerEvent, newEndDate: LocalDate)
   eventToUpdate.endDate = newEndDate
 }
 
-function onMoveEvent(
-  eventToUpdate: VsSchedulerEvent,
-  newStartDate: LocalDate,
-  newEndDate: LocalDate
-) {
-  eventToUpdate.startDate = newStartDate
-  eventToUpdate.endDate = newEndDate
+function onMoveEvent(datesDelta: number) {
+  props.group.events.forEach((event) => {
+    event.startDate = event.startDate.plusDays(datesDelta)
+    event.endDate = event.endDate.plusDays(datesDelta)
+  })
 }
 </script>
 
@@ -158,15 +156,15 @@ function onMoveEvent(
     :style="{ background: backgroundStripePattern, width: `${props.rowWidth}px` }"
   >
     <vs-scheduler-item
-      v-for="(event, idx) in group.events"
-      :key="idx + event.startDate.toString() + event.endDate.toString()"
+      v-for="event in group.events"
+      :key="event.id"
       :cell-width="cellWidth"
       :earliest-start-date="earliestStartDate"
       :event="event"
       :scroll-x="scrollX"
       @start-date-changed="(newStartDate) => onStartDateChange(event, newStartDate)"
       @end-date-changed="(newEndDate) => onEndDateChange(event, newEndDate)"
-      @move-event="(newStartDate, newEndDate) => onMoveEvent(event, newStartDate, newEndDate)"
+      @move-event="(datesDelta) => onMoveEvent(datesDelta)"
     />
   </div>
 </template>
