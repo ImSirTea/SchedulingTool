@@ -35,7 +35,11 @@ function daysBetweenOriginAndItemStart(event: VsSchedulerEvent): number {
 }
 
 function itemOffsetLeft(event: VsSchedulerEvent): number {
-  return props.cellWidth * daysBetweenOriginAndItemStart(event) + SPACING_OFFSET / 2
+  return (
+    props.cellWidth * daysBetweenOriginAndItemStart(event) +
+    SPACING_OFFSET / 2 +
+    props.cellWidth / 2
+  )
 }
 
 type ResizeHandleOrigin = 'start-date' | 'end-date'
@@ -174,10 +178,10 @@ function onItemMouseMove(event: MouseEvent) {
     }"
     @mousedown="($event) => onItemMouseDown($event)"
   >
-    <div
+    <!-- <div
       class="vs-scheduler-drag-handle vs-scheduler-drag-handle-left"
       @mousedown="($event) => onResizeHandleMouseDown($event, event.startDate, 'start-date')"
-    />
+    /> -->
     <div
       class="vs-scheduler-drag-handle vs-scheduler-drag-handle-right"
       @mousedown="($event) => onResizeHandleMouseDown($event, event.endDate, 'end-date')"
@@ -187,9 +191,9 @@ function onItemMouseMove(event: MouseEvent) {
 
 <style>
 .vs-scheduler-timeline-item {
-  background-color: lightcoral;
+  background-color: rgb(135, 206, 235);
   position: absolute;
-  box-shadow: inset 0 0 0 5px rgba(255, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 5px rgb(160, 184, 193);
 }
 
 /* So that when hoving an item, we can still see handles */
