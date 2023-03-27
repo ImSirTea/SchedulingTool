@@ -22,22 +22,40 @@ const emit = defineEmits<ItemSchedulerCalendarEvents>();
 
 // @TODO: I don't think I like this approach
 const daysAndMonthsWithYear = computed(() => {
-	const monthsWithYear: { month: string; year: number }[] = [];
+	const monthsWithYear: {
+		month: string;
+		year: number;
+		numberOfDays: number;
+	}[] = [];
 	const days: number[] = [];
 
-	let currentMonth: string = "";
+	let currentMonth: string = props.schedulerDateTimePeriod.start
+		.month()
+		.name();
+	const currentYear: number = props.schedulerDateTimePeriod.start.year();
+	let numberOfDays: number = 0;
 
 	for (let i = 0; i <= props.schedulerDateTimePeriod.length; i++) {
 		const workingDate = props.schedulerDateTimePeriod.start.plusDays(i);
-		const workingYear = workingDate.year();
 		const workingMonth = workingDate.month().name();
 
 		days.push(workingDate.dayOfMonth());
 
-		if (currentMonth !== workingMonth) {
-			monthsWithYear.push({ month: workingMonth, year: workingYear });
+		// If we swap to a new month, or are at the end of the list without pushing
+		if (
+			currentMonth !== workingMonth ||
+			i === props.schedulerDateTimePeriod.length
+		) {
+			monthsWithYear.push({
+				month: currentMonth,
+				year: currentYear,
+				numberOfDays
+			});
 			currentMonth = workingMonth;
+			numberOfDays = 0;
 		}
+
+		numberOfDays += 1;
 	}
 
 	return {
@@ -49,17 +67,32 @@ const daysAndMonthsWithYear = computed(() => {
 
 <template>
 	<div class="scheduler-calendar-ruler">
-		<div
-			v-for="monthWithYear in daysAndMonthsWithYear.monthsWithYear"
-			:key="monthWithYear.month + monthWithYear.year"
-		>
-			{{ monthWithYear.month }} {{ monthWithYear.year }}
+		<div class="scheduler-calendar-months">
+			<div
+				v-for="monthWithYear in daysAndMonthsWithYear.monthsWithYear"
+				:key="monthWithYear.month + monthWithYear.year"
+				:style="{
+					width:
+						monthWithYear.numberOfDays *
+							configuration.timeline.cell.width +
+						'px'
+				}"
+				class="scheduler-calendar-month"
+			>
+				{{ monthWithYear.month }} {{ monthWithYear.year }}
+			</div>
 		</div>
-		<div
-			v-for="(day, idx) in daysAndMonthsWithYear.days"
-			:key="day.toString() + idx.toString()"
-		>
-			{{ day }}
+		<div class="scheduler-calendar-days">
+			<div
+				v-for="(day, idx) in daysAndMonthsWithYear.days"
+				:key="day.toString() + idx.toString()"
+				:style="{
+					width: configuration.timeline.cell.width + 'px'
+				}"
+				class="scheduler-calendar-day"
+			>
+				{{ day }}
+			</div>
 		</div>
 	</div>
 </template>
@@ -67,5 +100,13 @@ const daysAndMonthsWithYear = computed(() => {
 <style>
 .scheduler-calendar-ruler {
 	grid-area: calendar;
+}
+
+.scheduler-calendar-months {
+	display: flex;
+}
+
+.scheduler-calendar-days {
+	display: flex;
 }
 </style>
