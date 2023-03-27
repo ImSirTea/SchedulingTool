@@ -14,4 +14,12 @@ const props = defineProps<ItemSchedulerCalendarProps>();
 const emit = defineEmits<ItemSchedulerCalendarEvents>();
 </script>
 
-<template>Work in progress! 🛠</template>
+<template>
+	<div class="scheduler-calendar-ruler">Work in progress! 🛠</div>
+</template>
+
+<style>
+.scheduler-calendar-ruler {
+	grid-area: calendar;
+}
+</style>
