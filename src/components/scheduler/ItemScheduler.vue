@@ -3,25 +3,43 @@ import ItemSchedulerCalendarRuler from "@/components/scheduler/ItemSchedulerCale
 import ItemSchedulerGroups from "@/components/scheduler/ItemSchedulerGroups.vue";
 import ItemSchedulerTimeline from "@/components/scheduler/ItemSchedulerTimeline.vue";
 import type {
+	ItemSchedulerConfiguration,
 	ItemSchedulerItem,
 	ItemSchedulerRow,
 	ScrollPosition
 } from "@/components/scheduler/types";
-import { reactive, ref, shallowRef } from "vue";
-
+import { computed, reactive, ref, shallowRef } from "vue";
 export interface ItemSchedulerProps {
 	rows: ItemSchedulerRow[];
 	items: ItemSchedulerItem[];
+	configuration?: ItemSchedulerConfiguration;
 }
 export interface ItemSchedulerEvents {}
 
 const props = defineProps<ItemSchedulerProps>();
 const emit = defineEmits<ItemSchedulerEvents>();
 
+const DEFAULT_CONFIGURATION: ItemSchedulerConfiguration = {
+	row: {
+		defaultHeight: 50,
+		name: {
+			defaultWidth: 300
+		}
+	},
+	column: {
+		defaultWidth: 40
+	}
+};
+
 const scrollPosition = reactive<ScrollPosition>({
 	x: 0,
 	y: 0
 });
+
+const configuration = computed(() => ({
+	...DEFAULT_CONFIGURATION,
+	...props.configuration
+}));
 
 const groupsWidth = ref<number>(300);
 const internalRows = shallowRef<ItemSchedulerRow[]>([]);

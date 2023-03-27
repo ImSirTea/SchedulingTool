@@ -1,5 +1,20 @@
 import type { LocalDate } from "@js-joda/core";
-import type exp from "constants";
+
+export interface ItemSchedulerConfiguration {
+	row?: ItemSchedulerRowConfiguration;
+	column?: ItemSchedulerColumnConfiguration;
+}
+
+export interface ItemSchedulerRowConfiguration {
+	defaultHeight?: number;
+	name?: {
+		defaultWidth?: number;
+	};
+}
+
+export interface ItemSchedulerColumnConfiguration {
+	defaultWidth?: number;
+}
 
 export interface ItemSchedulerRow {
 	id: string;
