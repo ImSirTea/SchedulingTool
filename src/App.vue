@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import ItemScheduler from "@/components/scheduler/ItemScheduler.vue"
-
 </script>
 
 <template>
