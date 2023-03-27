@@ -12,22 +12,28 @@ import { computed, reactive, ref, shallowRef } from "vue";
 export interface ItemSchedulerProps {
 	rows: ItemSchedulerRow[];
 	items: ItemSchedulerItem[];
-	configuration?: ItemSchedulerConfiguration;
+	configuration?: Partial<ItemSchedulerConfiguration>;
 }
 export interface ItemSchedulerEvents {}
 
 const props = defineProps<ItemSchedulerProps>();
 const emit = defineEmits<ItemSchedulerEvents>();
 
+const internalRows = shallowRef<ItemSchedulerRow[]>([]);
+const internalItems = shallowRef<ItemSchedulerItem[]>([]);
+
 const DEFAULT_CONFIGURATION: ItemSchedulerConfiguration = {
 	row: {
-		defaultHeight: 50,
+		height: 50,
 		name: {
-			defaultWidth: 300
+			width: 300
 		}
 	},
-	column: {
-		defaultWidth: 40
+	timeline: {
+		totalMaxHeight: 500,
+		cell: {
+			width: 40
+		}
 	}
 };
 
@@ -40,31 +46,32 @@ const configuration = computed(() => ({
 	...DEFAULT_CONFIGURATION,
 	...props.configuration
 }));
-
-const groupsWidth = ref<number>(300);
-const internalRows = shallowRef<ItemSchedulerRow[]>([]);
-const internalItems = shallowRef<ItemSchedulerItem[]>([]);
 </script>
 
 <template>
 	<div
 		class="scheduler-container"
-		:style="{ gridTemplateColumns: `${groupsWidth}px auto` }"
+		:style="{
+			gridTemplateColumns: `${configuration.row.name.width}px auto`
+		}"
 	>
 		<item-scheduler-calendar-ruler
-			:rows="internalRows"
 			v-model:scroll-x="scrollPosition.x"
+			:rows="internalRows"
+			:configuration="configuration"
 		/>
 		<item-scheduler-groups
-			:rows="internalRows"
 			v-model:scroll-y="scrollPosition.y"
-			v-model:width="groupsWidth"
+			v-model:width="configuration.row.name.width"
+			:rows="internalRows"
+			:configuration="configuration"
 		/>
 		<item-scheduler-timeline
 			v-model:rows="internalRows"
 			v-model:items="internalItems"
 			v-model:scroll-x="scrollPosition.x"
 			v-model:scroll-y="scrollPosition.y"
+			:configuration="configuration"
 		/>
 	</div>
 </template>

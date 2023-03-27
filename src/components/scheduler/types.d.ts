@@ -1,19 +1,24 @@
 import type { LocalDate } from "@js-joda/core";
 
 export interface ItemSchedulerConfiguration {
-	row?: ItemSchedulerRowConfiguration;
-	column?: ItemSchedulerColumnConfiguration;
+	row: ItemSchedulerRowConfiguration;
+	timeline: ItemSchedulerTimelineConfiguration;
 }
 
 export interface ItemSchedulerRowConfiguration {
-	defaultHeight?: number;
-	name?: {
-		defaultWidth?: number;
+	height: number;
+	name: {
+		width: number;
 	};
 }
 
-export interface ItemSchedulerColumnConfiguration {
-	defaultWidth?: number;
+export interface ItemSchedulerTimelineConfiguration {
+	cell: ItemSchedulerTimelineCellConfiguration;
+	totalMaxHeight: number;
+}
+
+export interface ItemSchedulerTimelineCellConfiguration {
+	width: number;
 }
 
 export interface ItemSchedulerRow {

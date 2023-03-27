@@ -1,8 +1,12 @@
 <script lang="ts" setup>
-import type { ItemSchedulerRow } from "@/components/scheduler/types";
+import type {
+	ItemSchedulerConfiguration,
+	ItemSchedulerRow
+} from "@/components/scheduler/types";
 
 export interface ItemSchedulerGroupsProps {
 	rows: ItemSchedulerRow[];
+	configuration: ItemSchedulerConfiguration;
 	scrollY: number;
 	width: number;
 }

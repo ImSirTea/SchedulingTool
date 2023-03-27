@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type {
+	ItemSchedulerConfiguration,
 	ItemSchedulerItem,
 	ItemSchedulerRow
 } from "@/components/scheduler/types";
@@ -7,6 +8,7 @@ import type {
 export interface ItemSchedulerTimelineProps {
 	rows: ItemSchedulerRow[];
 	items: ItemSchedulerItem[];
+	configuration: ItemSchedulerConfiguration;
 	scrollX: number;
 	scrollY: number;
 }
