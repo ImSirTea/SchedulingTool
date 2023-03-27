@@ -3,26 +3,33 @@ import ItemSchedulerCalendarRuler from "@/components/scheduler/ItemSchedulerCale
 import ItemSchedulerGroups from "@/components/scheduler/ItemSchedulerGroups.vue";
 import ItemSchedulerTimeline from "@/components/scheduler/ItemSchedulerTimeline.vue";
 import type {
-	ItemSchedulerConfiguration,
-	ItemSchedulerItem,
-	ItemSchedulerRow,
-	ScrollPosition
+	SchedulerConfiguration,
+	SchedulerItem,
+	SchedulerRow,
+	ScrollPosition,
+	DateTimePeriod
 } from "@/components/scheduler/types";
-import { computed, reactive, ref, shallowRef } from "vue";
+import { ChronoUnit, LocalDateTime } from "@js-joda/core";
+import { computed, reactive, shallowRef } from "vue";
 export interface ItemSchedulerProps {
-	rows: ItemSchedulerRow[];
-	items: ItemSchedulerItem[];
-	configuration?: Partial<ItemSchedulerConfiguration>;
+	rows: SchedulerRow[];
+	items: SchedulerItem[];
+	configuration?: Partial<SchedulerConfiguration>;
 }
+
 export interface ItemSchedulerEvents {}
+
+export interface SchedulerDateTimePeriod extends DateTimePeriod {
+	length: number;
+}
 
 const props = defineProps<ItemSchedulerProps>();
 const emit = defineEmits<ItemSchedulerEvents>();
 
-const internalRows = shallowRef<ItemSchedulerRow[]>([]);
-const internalItems = shallowRef<ItemSchedulerItem[]>([]);
+const internalRows = shallowRef<SchedulerRow[]>([]);
+const internalItems = shallowRef<SchedulerItem[]>([]);
 
-const DEFAULT_CONFIGURATION: ItemSchedulerConfiguration = {
+const DEFAULT_CONFIGURATION: SchedulerConfiguration = {
 	row: {
 		height: 50,
 		name: {
@@ -46,6 +53,32 @@ const configuration = computed(() => ({
 	...DEFAULT_CONFIGURATION,
 	...props.configuration
 }));
+
+const schedulerDateTimePeriod = computed<SchedulerDateTimePeriod>(() =>
+	props.items.reduce(
+		({ start, end }, currItem) => {
+			const earliestDateTime = start.isBefore(currItem.date.start)
+				? start
+				: currItem.date.start;
+
+			const latestDateTime = end.isAfter(currItem.date.end)
+				? end
+				: currItem.date.end;
+
+			const periodLength = ChronoUnit.DAYS.between(
+				earliestDateTime,
+				latestDateTime
+			);
+
+			return {
+				start: earliestDateTime,
+				end: latestDateTime,
+				length: periodLength
+			};
+		},
+		{ start: LocalDateTime.now(), end: LocalDateTime.now(), length: 0 }
+	)
+);
 </script>
 
 <template>
@@ -59,6 +92,7 @@ const configuration = computed(() => ({
 			v-model:scroll-x="scrollPosition.x"
 			:rows="internalRows"
 			:configuration="configuration"
+			:scheduler-date-time-period="schedulerDateTimePeriod"
 		/>
 		<item-scheduler-groups
 			v-model:scroll-y="scrollPosition.y"

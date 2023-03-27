@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { ItemSchedulerRow } from "@/components/scheduler/types";
+import type { SchedulerRow } from "@/components/scheduler/types";
 
 export interface ItemSchedulerRowProps {
-	row: ItemSchedulerRow;
+	row: SchedulerRow;
 }
 export interface ItemSchedulerRowEvents {}
 

@@ -1,20 +1,20 @@
 <script lang="ts" setup>
 import type {
-	ItemSchedulerConfiguration,
-	ItemSchedulerItem,
-	ItemSchedulerRow
+	SchedulerConfiguration,
+	SchedulerItem,
+	SchedulerRow
 } from "@/components/scheduler/types";
 
 export interface ItemSchedulerTimelineProps {
-	rows: ItemSchedulerRow[];
-	items: ItemSchedulerItem[];
-	configuration: ItemSchedulerConfiguration;
+	rows: SchedulerRow[];
+	items: SchedulerItem[];
+	configuration: SchedulerConfiguration;
 	scrollX: number;
 	scrollY: number;
 }
 export interface ItemSchedulerTimelineEvents {
-	(eventName: "update:rows", rows: ItemSchedulerRow[]): void;
-	(eventName: "update:items", items: ItemSchedulerItem[]): void;
+	(eventName: "update:rows", rows: SchedulerRow[]): void;
+	(eventName: "update:items", items: SchedulerItem[]): void;
 	(eventName: "update:scroll-x", newScrollX: number): void;
 	(eventName: "update:scroll-y", newScrollY: number): void;
 }

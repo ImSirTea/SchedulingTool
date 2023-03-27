@@ -1,39 +1,40 @@
-import type { LocalDate } from "@js-joda/core";
+import type { LocalDate, LocalDateTime } from "@js-joda/core";
 
-export interface ItemSchedulerConfiguration {
-	row: ItemSchedulerRowConfiguration;
-	timeline: ItemSchedulerTimelineConfiguration;
+export interface SchedulerConfiguration {
+	row: SchedulerRowConfiguration;
+	timeline: SchedulerTimelineConfiguration;
 }
 
-export interface ItemSchedulerRowConfiguration {
+export interface SchedulerRowConfiguration {
 	height: number;
 	name: {
 		width: number;
 	};
 }
 
-export interface ItemSchedulerTimelineConfiguration {
-	cell: ItemSchedulerTimelineCellConfiguration;
+export interface SchedulerTimelineConfiguration {
+	cell: SchedulerTimelineCellConfiguration;
 	totalMaxHeight: number;
 }
 
-export interface ItemSchedulerTimelineCellConfiguration {
+export interface SchedulerTimelineCellConfiguration {
 	width: number;
 }
 
-export interface ItemSchedulerRow {
+export interface SchedulerRow {
 	id: string;
 	name: string;
 }
 
-export interface ItemSchedulerItem {
+export interface SchedulerItem {
 	id: string;
 	name: string;
+	date: DateTimePeriod;
 }
 
-export interface DatePeriod {
-	start: LocalDate;
-	end: LocalDate;
+export interface DateTimePeriod {
+	start: LocalDateTime;
+	end: LocalDateTime;
 }
 
 export interface ScrollPosition {
