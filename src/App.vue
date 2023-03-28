@@ -1,50 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import VsScheduler from './components/VsScheduler.vue'
-import type { VsSchedulerEventGroup, VsSchedulerEvent } from './components/VsScheduler.vue'
-import { LocalDate } from '@js-joda/core'
+import ItemScheduler from "@/components/scheduler/ItemScheduler.vue";
+import type { SchedulerItem } from "@/components/scheduler/types";
+import { LocalDate, LocalDateTime, LocalTime } from "@js-joda/core";
 
-function buildEvents(number: number, startDate: LocalDate): VsSchedulerEvent[] {
-  const events: VsSchedulerEvent[] = []
+const testItems: SchedulerItem[] = Array(50)
+	.fill(0)
+	.map((_, id): SchedulerItem => {
+		return {
+			id: id.toString(),
+			name: id.toString(),
+			date: {
+				start: LocalDateTime.of(
+					LocalDate.now().plusDays(id),
+					LocalTime.NOON
+				),
 
-  let workingStartDate = startDate
-
-  for (let i = 0; i < number; i++) {
-    const endDate = workingStartDate.plusDays(Math.max(1, Math.round(Math.random() * 10)))
-
-    events.push({
-      id: i.toString(),
-      startDate: workingStartDate,
-      endDate
-    })
-
-    workingStartDate = endDate
-  }
-
-  return events
-}
-
-const eventGroups = ref<VsSchedulerEventGroup[]>(
-  Array(50)
-    .fill(0)
-    .map(
-      (arr, idx): VsSchedulerEventGroup => ({
-        name: `Group ${idx}`,
-        events: buildEvents(3, LocalDate.now().plusDays(idx))
-      })
-    )
-)
+				end: LocalDateTime.of(
+					LocalDate.now().plusDays(id + 3),
+					LocalTime.NOON
+				)
+			}
+		};
+	});
 </script>
 
 <template>
-  <div class="container">
-    <vs-scheduler :groups="eventGroups" />
-  </div>
+	<div class="container">
+		<item-scheduler :rows="[]" :items="testItems" />
+	</div>
 </template>
 
 <style scoped>
 .container {
-  width: 75vw;
-  height: 75vh;
+	width: 75vw;
+	height: 75vh;
 }
 </style>
